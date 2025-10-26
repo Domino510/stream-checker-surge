@@ -1,6 +1,4 @@
-const { getResponse } = require('surge-sdk');
-
-// 定义需要检测的流媒体服务的 URL 或域名
+// 定义需要检测的流媒体服务
 const services = [
   { name: 'Netflix', domain: 'netflix.com', region: '美国' },
   { name: 'Disney+', domain: 'disneyplus.com', region: '美国' },
@@ -13,7 +11,10 @@ const services = [
   { name: 'Paramount+', domain: 'paramountplus.com', region: '美国' },
   { name: 'Discovery+', domain: 'discoveryplus.com', region: '美国' },
   { name: 'BBC iPlayer', domain: 'bbc.co.uk', region: '英国' },
-  { name: 'Apple TV+', domain: 'apple.com', region: '美国' }
+  { name: 'Apple TV+', domain: 'apple.com', region: '美国' },
+  { name: 'YouTube Music', domain: 'music.youtube.com', region: '美国' },
+  { name: 'Spotify', domain: 'spotify.com', region: '全球' },
+  { name: 'Apple Music', domain: 'music.apple.com', region: '全球' }
 ];
 
 // 获取当前节点
@@ -26,7 +27,8 @@ const checkStreamService = async () => {
   let result = [];
   for (let service of services) {
     try {
-      const response = await getResponse(`https://${service.domain}`, { timeout: 10 });
+      // 进行 HTTP 请求以检测是否能访问
+      const response = await $http.get(`https://${service.domain}`, { timeout: 10 });
       let node = getCurrentNode();
       result.push(`${service.name} 使用的是 ${node} 节点，当前区域: ${service.region}`);
     } catch (error) {
