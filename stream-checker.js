@@ -41,5 +41,5 @@ const checkStreamService = async () => {
 // 返回检测结果
 (async () => {
   const result = await checkStreamService();
-  return result.join('\n');
+  $notify('流媒体解锁检测结果', '', result.join('\n'));
 })();
