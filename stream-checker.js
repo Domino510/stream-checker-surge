@@ -1,45 +1,51 @@
-// 定义需要检测的流媒体服务
-const services = [
-  { name: 'Netflix', domain: 'netflix.com', region: '美国' },
-  { name: 'Disney+', domain: 'disneyplus.com', region: '美国' },
-  { name: 'YouTube', domain: 'youtube.com', region: '日本' },
-  { name: 'Hulu', domain: 'hulu.com', region: '美国' },
-  { name: 'Amazon Prime Video', domain: 'primevideo.com', region: '美国' },
-  { name: 'HBO Max', domain: 'hbomax.com', region: '美国' },
-  { name: 'Peacock', domain: 'peacocktv.com', region: '美国' },
-  { name: 'Vudu', domain: 'vudu.com', region: '美国' },
-  { name: 'Paramount+', domain: 'paramountplus.com', region: '美国' },
-  { name: 'Discovery+', domain: 'discoveryplus.com', region: '美国' },
-  { name: 'BBC iPlayer', domain: 'bbc.co.uk', region: '英国' },
-  { name: 'Apple TV+', domain: 'apple.com', region: '美国' },
-  { name: 'YouTube Music', domain: 'music.youtube.com', region: '美国' },
-  { name: 'Spotify', domain: 'spotify.com', region: '全球' },
-  { name: 'Apple Music', domain: 'music.apple.com', region: '全球' }
-];
+{\rtf1\ansi\ansicpg936\cocoartf2865
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-// 获取当前节点
-const getCurrentNode = () => {
-  return $prefs.valueForKey('surge_node') || '未知节点';
+\f0\fs24 \cf0 const \{ getResponse \} = require('surge-sdk');\
+\
+// \uc0\u23450 \u20041 \u38656 \u35201 \u26816 \u27979 \u30340 \u27969 \u23186 \u20307 \u26381 \u21153 \u30340  URL \u25110 \u22495 \u21517 \
+const services = [\
+  \{ name: 'Netflix', domain: 'netflix.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'Disney+', domain: 'disneyplus.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'YouTube', domain: 'youtube.com', region: '\uc0\u26085 \u26412 ' \},\
+  \{ name: 'Hulu', domain: 'hulu.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'Amazon Prime Video', domain: 'primevideo.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'HBO Max', domain: 'hbomax.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'Peacock', domain: 'peacocktv.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'Vudu', domain: 'vudu.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'Paramount+', domain: 'paramountplus.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'Discovery+', domain: 'discoveryplus.com', region: '\uc0\u32654 \u22269 ' \},\
+  \{ name: 'BBC iPlayer', domain: 'bbc.co.uk', region: '\uc0\u33521 \u22269 ' \},\
+  \{ name: 'Apple TV+', domain: 'apple.com', region: '\uc0\u32654 \u22269 ' \}\
+];\
+\
+// \uc0\u33719 \u21462 \u24403 \u21069 \u33410 \u28857 \
+const getCurrentNode = () => \{\
+  return $prefs.valueForKey('surge_node') || '\uc0\u26410 \u30693 \u33410 \u28857 ';\
+\}\
+\
+// \uc0\u35831 \u27714 \u26816 \u27979 \u27599 \u20010 \u27969 \u23186 \u20307 \u26381 \u21153 \
+const checkStreamService = async () => \{\
+  let result = [];\
+  for (let service of services) \{\
+    try \{\
+      const response = await getResponse(`https://$\{service.domain\}`, \{ timeout: 10 \});\
+      let node = getCurrentNode();\
+      result.push(`$\{service.name\} \uc0\u20351 \u29992 \u30340 \u26159  $\{node\} \u33410 \u28857 \u65292 \u24403 \u21069 \u21306 \u22495 : $\{service.region\}`);\
+    \} catch (error) \{\
+      result.push(`$\{service.name\} \uc0\u26080 \u27861 \u35775 \u38382 `);\
+    \}\
+  \}\
+  return result;\
+\}\
+\
+// \uc0\u36820 \u22238 \u26816 \u27979 \u32467 \u26524 \
+(async () => \{\
+  const result = await checkStreamService();\
+  return result.join('\\n');\
+\})();\
 }
-
-// 请求检测每个流媒体服务
-const checkStreamService = async () => {
-  let result = [];
-  for (let service of services) {
-    try {
-      // 进行 HTTP 请求以检测是否能访问
-      const response = await $http.get(`https://${service.domain}`, { timeout: 10 });
-      let node = getCurrentNode();
-      result.push(`${service.name} 使用的是 ${node} 节点，当前区域: ${service.region}`);
-    } catch (error) {
-      result.push(`${service.name} 无法访问`);
-    }
-  }
-  return result;
-}
-
-// 返回检测结果
-(async () => {
-  const result = await checkStreamService();
-  $notify('流媒体解锁检测结果', '', result.join('\n'));
-})();
